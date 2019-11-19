@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leicx.weixin.mapper.ChatMsgMapper" >
+  <resultMap id="BaseResultMap" type="com.leicx.weixin.entity.ChatMsg" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="send_user_id" property="sendUserId" jdbcType="VARCHAR" />
+    <result column="accept_user_id" property="acceptUserId" jdbcType="VARCHAR" />
+    <result column="msg" property="msg" jdbcType="VARCHAR" />
+    <result column="sign_flag" property="signFlag" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="insertColumns">
+    id,send_user_id,accept_user_id,msg,sign_flag,create_time
+  </sql>
+
+  <insert id="insert">
+    INSERT INTO chat_msg (
+    id,send_user_id,accept_user_id,msg,sign_flag,create_time
+    ) VALUES (
+    #{chatMsg.id},#{chatMsg.sendUserId},#{chatMsg.acceptUserId},#{chatMsg.msg},#{chatMsg.signFlag},#{chatMsg.createTime}
+    )
+    <selectKey keyProperty="id" resultType="integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+  <update id="updateSignFlagByIds">
+    UPDATE chat_msg
+    SET sign_flag = 1
+    WHERE  id IN
+    <foreach collection="ids" item="item" separator="," open="(" close=")" index="index">
+      #{item}
+    </foreach>
+
+  </update>
+  <select id="getUnsignedMsgByUserId" resultMap="BaseResultMap">
+    SELECT
+      <include refid="insertColumns" />
+    from chat_msg
+    <where>
+      accept_user_id = #{acceptUserId} AND sign_flag = 0
+    </where>
+  </select>
+</mapper>

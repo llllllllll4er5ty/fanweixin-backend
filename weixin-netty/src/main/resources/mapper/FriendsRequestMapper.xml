@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leicx.weixin.mapper.FriendsRequestMapper" >
+  <resultMap id="BaseResultMap" type="com.leicx.weixin.entity.FriendsRequest" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="send_user_id" property="sendUserId" jdbcType="VARCHAR" />
+    <result column="accept_user_id" property="acceptUserId" jdbcType="VARCHAR" />
+    <result column="request_datetime" property="requestDatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="insertColumn">
+    id,send_user_id,accept_user_id,request_datetime
+  </sql>
+
+  <insert id="insert">
+    INSERT INTO friends_request (
+      id,send_user_id,accept_user_id,request_datetime
+    ) VALUES (
+      #{friendsRequest.id},#{friendsRequest.sendUserId},#{friendsRequest.acceptUserId},#{friendsRequest.requestDatetime}
+    )
+    <selectKey keyProperty="id" resultType="integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+  <delete id="deleteFriendRequest">
+    DELETE FROM friends_request
+    <where>
+      send_user_id = #{sendUserId} AND accept_user_id = #{acceptUserId}
+    </where>
+  </delete>
+
+  <select id="getFriendsRequestByIds" resultMap="BaseResultMap">
+  SELECT
+    <include refid="insertColumn"/>
+  FROM friends_request
+  <where>
+    send_user_id = #{sendUserId} AND accept_user_id = #{acceptUserId}
+  </where>
+  </select>
+  <select id="getListBySendUserIdJoinUsers" resultType="com.leicx.weixin.pojo.vo.UsersVO">
+    select
+      u.id as id,
+      u.username as username,
+      u.face_img as faceImg,
+      u.nickname as nickname
+    from friends_request fr
+    left join users u
+    on fr.send_user_id = u.id
+    where fr.accept_user_id = #{acceptUserId}
+  </select>
+  <select id="getFriendRequestCountBySendUser" resultType="integer">
+    select
+      count(*)
+    from friends_request
+    where accept_user_id = #{acceptUserId}
+  </select>
+</mapper>

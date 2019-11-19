@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.leicx.weixin.mapper.UsersMapper" >
+  <resultMap id="BaseResultMap" type="com.leicx.weixin.entity.Users" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="face_img" property="faceImg" jdbcType="VARCHAR" />
+    <result column="face_img_big" property="faceImgBig" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="qrcode" property="qrcode" jdbcType="VARCHAR" />
+    <result column="cid" property="cid" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="insertColumn">
+    id,username,password,face_img,face_img_big,nickname,qrcode,cid
+  </sql>
+  <insert id="insertUser">
+    INSERT INTO users (
+      id,username,password,face_img,face_img_big,nickname,qrcode,cid
+    ) VALUES (
+      #{user.id},#{user.username},#{user.password},#{user.faceImg},#{user.faceImgBig},#{user.nickname},#{user.qrcode},#{user.cid}
+    )
+    <selectKey keyProperty="id" resultType="integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+
+  <update id="updateUser" parameterType="com.leicx.weixin.entity.Users">
+    UPDATE users
+    SET
+      <if test="id!=null">id = #{id}</if>
+      <if test="username!=null">, username = #{username}</if>
+      <if test="password!=null">, password = #{password}</if>
+      <if test="faceImg!=null">, face_img = #{faceImg}</if>
+      <if test="faceImgBig!=null">, face_img_big = #{faceImgBig}</if>
+      <if test="nickname!=null">, nickname = #{nickname}</if>
+      <if test="qrcode!=null">, qrcode = #{qrcode}</if>
+      <if test="cid!=null">, cid = #{cid}</if>
+    <where>
+      id = #{id}
+    </where>
+  </update>
+
+  <select id="getUserByName" resultMap="BaseResultMap">
+    SELECT
+      <include refid="insertColumn"/>
+    FROM users
+    <where>
+      username = #{name}
+    </where>
+  </select>
+  <select id="getUserByNameAndPwd" resultMap="BaseResultMap">
+    SELECT
+    <include refid="insertColumn"/>
+    FROM users
+    <where>
+      username = #{name} AND password = #{pwd}
+    </where>
+  </select>
+  <select id="getUserByKey" resultMap="BaseResultMap">
+    SELECT
+    <include refid="insertColumn"/>
+    FROM users
+    <where>
+      id = #{key}
+    </where>
+  </select>
+
+</mapper>
